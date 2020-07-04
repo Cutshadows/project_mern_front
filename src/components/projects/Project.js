@@ -6,8 +6,6 @@ const Project = ({project}) => {
     const projectContext=useContext(ProjectContext);
     const {currentProject}=projectContext;
     
-    console.log(currentProject.toString())
-    
     return ( 
         <li>
             <button 
