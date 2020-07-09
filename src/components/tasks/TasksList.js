@@ -1,6 +1,8 @@
 import React, {Fragment, useContext} from 'react';
 import Task from './Task';
 import ProjectContext from 'context/projects/projectContext';
+import TaskContext from 'context/tasks/taskContext';
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 
 const TasksList = () => {
@@ -11,12 +13,9 @@ const TasksList = () => {
     if(!project)return <h2>Selecciona un proyecto</h2>;
     const [currentProject]=project;
 
-    const tasks=[
-        {id:1, nombre:'Elegir Plataforma', estado:true},
-        {id:2, nombre:'Elegir Colores', estado:false},
-        {id:3, nombre:'Elegir plataforma de pago', estado:false},
-        {id:4, nombre:'Elegir hosting', estado:true},
-    ];
+    const taskContext=useContext(TaskContext);
+    const {projecttask}=taskContext;
+
     // const tasks=[];
     //array destructuring para extraer el proyecto
     const onClickEliminar=()=>{
@@ -26,15 +25,23 @@ const TasksList = () => {
         <Fragment>
             <h2>Proyecto: {currentProject.projectName}</h2>
             <ul className="listado-tareas">
-                {tasks.length===0
+                {projecttask.length===0
                     ?(<li className="tarea"><p>No hay tareas</p></li>)
                     :
-                    tasks.map(task=>(
-                        <Task 
+                    <TransitionGroup>
+                        { projecttask.map(task=>(
+                            <CSSTransition
                             key={task.id}
-                            task={task}
-                        />
-                    ))}
+                            timeout={200}
+                            classNames="tarea"
+                            >
+                                <Task
+                                    task={task}
+                                />
+                            </CSSTransition>
+                        ))}
+                    </TransitionGroup>
+                    }
                 <button
                     className="btn btn-eliminar"
                     type="button"
