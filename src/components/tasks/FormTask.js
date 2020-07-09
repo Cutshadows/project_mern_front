@@ -9,7 +9,25 @@ const FormTask = () => {
     const {project}=projectContext;
     
     const taskContext=useContext(TaskContext);
-    const {selectedtask, taskerror, addTask, viewErrorTask, getTasks}=taskContext;
+    const {
+        selectedtask, 
+        taskerror, 
+        addTask, 
+        viewErrorTask, 
+        getTasks,
+        taskUdp,
+        cleanTask
+    }=taskContext;
+    
+    useEffect(()=>{
+        if(selectedtask!==null){
+            saveTask(selectedtask)
+        }else{
+            saveTask({
+                taskName:''
+            })
+        }
+    }, [selectedtask])
     const [task, saveTask]=useState({
         taskName:''
     });
@@ -28,9 +46,7 @@ const FormTask = () => {
     }
     const {taskName}=task;
     
-    useEffect(()=>{
-
-    }, [])
+    
 
     const onSubmit=e=>{
         e.preventDefault();
@@ -40,11 +56,19 @@ const FormTask = () => {
             return;   
         }
         //pasar la validacion
+        if(selectedtask===null){
+            //add new task
+            task.projectId=currentProject.id;
+            task.estado=false;
+            addTask(task);
+        }else{
+            //actualizar tarea existente
+            taskUdp(task);
 
-        //add new task
-        task.projectId=currentProject.id;
-        task.estado=false;
-        addTask(task);
+            //limpia tarea
+            cleanTask();
+        }
+
         //Obtener y filtrar
         getTasks(currentProject.id);
 
@@ -70,7 +94,7 @@ const FormTask = () => {
                 <div className="contenedor-input">
                     <input 
                         className="btn btn-primario btn-submit btn-block"
-                        value="Agregar Tarea"
+                        value={selectedtask?'Editar tarea':'Agregar tarea'}
                         type="submit"/>
                 </div>
             </form>

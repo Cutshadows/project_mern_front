@@ -1,4 +1,4 @@
-import React, {Fragment, useContext} from 'react';
+import React, {useContext, Fragment} from 'react';
 import Task from './Task';
 import ProjectContext from 'context/projects/projectContext';
 import TaskContext from 'context/tasks/taskContext';

@@ -1,6 +1,7 @@
 import React,{useReducer, Children} from 'react';
 import taskReducer from './taskReducers';
 import TaskContext from './taskContext';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
 TASKS_PROJECT,
@@ -8,7 +9,9 @@ ADD_TASK,
 VALIDATE_TASK,
 DELETE_TASK,
 TASK_STATE,
-UPDATE_TASK
+UPDATE_TASK,
+TASK_UDP,
+CLEAN_TASK
 } from '../../types';
 
 
@@ -44,6 +47,7 @@ const TaskState =props=>{
 
     //Agregar una tarea al proyecto seleccionado
     const addTask=task=>{
+        task.id=uuidv4();
         dispatch({
             type:ADD_TASK,
             payload:task
@@ -75,6 +79,17 @@ const TaskState =props=>{
             payload:task
         })
     }
+    const taskUdp=task=>{
+        dispatch({
+            type:TASK_UDP,
+            payload:task
+        })
+    }
+    const cleanTask=()=>{
+        dispatch({
+            type:CLEAN_TASK
+        })
+    }
     return(
         <TaskContext.Provider
         value={{
@@ -87,7 +102,9 @@ const TaskState =props=>{
             viewErrorTask,
             deleteTask,
             changeStateTask,
-            updateTask
+            updateTask,
+            taskUdp,
+            cleanTask
         }}>
         {props.children}
         </TaskContext.Provider>

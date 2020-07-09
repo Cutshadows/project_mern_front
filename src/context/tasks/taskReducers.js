@@ -4,7 +4,9 @@ import {
     VALIDATE_TASK,
     DELETE_TASK,
     TASK_STATE,
-    UPDATE_TASK
+    UPDATE_TASK,
+    TASK_UDP,
+    CLEAN_TASK
 } from '../../types';
 
 
@@ -34,13 +36,25 @@ export default (state, action)=>{
         case TASK_STATE:
             return{
                 ...state,
-                tasks:state.projecttask.map(task=>task.id===action.payload ? action.payload :task)
+                tasks:state.tasks.map(task=>task.id===action.payload.id ? 
+                    action.payload:task)
             }
         case UPDATE_TASK:
             return{
                 ...state,
                 selectedtask:action.payload
             }
+        case TASK_UDP:
+            return{
+                ...state,
+                tasks:state.tasks.map(task=>task.id===action.payload.id?
+                    action.payload:task)
+            }
+        case CLEAN_TASK:
+            return{
+                ...state,
+                selectedtask:null
+            }  
         default:
             return state;
     }
