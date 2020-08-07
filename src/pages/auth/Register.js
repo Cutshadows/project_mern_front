@@ -1,7 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {Link} from 'react-router-dom';
+import AlertContext from '../../context/alerts/alertContext';
+import AuthContext from '../../context/authentication/authContext';
 
-const Register = () => {
+
+const Register = (props) => {
+    //extraer los valores del context
+    const alertContext=useContext(AlertContext);
+    const {alert, viewAlert}=alertContext;
+
+    const authContext=useContext(AuthContext);
+    const {authenticated, msg, registerUser } =authContext;
+
+
+    //cuando el usuario se haya registrado mal o duplicado
+    useEffect(()=>{
+        if(authenticated){
+            props.history.push('/projects');
+        }
+        if(msg){
+            viewAlert(msg.msg, msg.category);
+            return;
+        }
+    }, [msg, authenticated, props.history]);
+
     const [user, saveUser]=useState({
         email:'',
         username:'',
@@ -11,7 +33,7 @@ const Register = () => {
 
 
     const {email, username, password, confirmar}=user;
-    const onChangeIniciarSesion=()=>{
+    const onChangeIniciarSesion=e=>{
         saveUser({
             ...user,
             [e.target.name]: e.target.value
@@ -23,9 +45,45 @@ const Register = () => {
         e.preventDefault();
 
         //Validar campos de el formulario
+        if(email.trim()==='' || 
+            username.trim()==='' || 
+            password.trim()==='' || 
+            confirmar.trim()===''){
+                viewAlert('Todos los campos son obligatorios', 'alerta-error');
+                return;
+            }
+
+        //Password minimo de 6 caracteres
+        if(password.length<6){
+            viewAlert('El password debe ser de al menos 6 caracteres', 'alerta-error');
+            return;
+        }
+
+        // Los 2 password son iguales
+        if(password!==confirmar){
+            viewAlert('Los password no coinciden', 'alerta-error');
+            return;
+        }
+        //pasar al action
+        registerUser({
+            username,
+            password,
+            email
+        });
+        
+
     }
     return ( 
         <div className="form-usuario">
+        {
+            alert? (
+                <div className={`alerta ${alert.category}`}>
+                    {alert.msg} 
+                </div>
+                )
+                :
+                null
+        }
             <div className="contenedor-form sombra-dark">
                 <h1>Registrar Usuario</h1>
                 <form 

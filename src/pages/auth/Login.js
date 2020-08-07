@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {Link} from 'react-router-dom';
 
+import AlertContext from '../../context/alerts/alertContext';
+import AuthContext from '../../context/authentication/authContext';
+
 const Login = () => {
+
+     //extraer los valores del context
+     const alertContext=useContext(AlertContext);
+     const {alert, viewAlert}=alertContext;
+ 
+     const authContext=useContext(AuthContext);
+     const {authenticated, msg, initSession } =authContext;
+
+     
     const [user, saveUser]=useState({
         email:'',
         password:''
@@ -16,6 +28,17 @@ const Login = () => {
         })
 
     }
+
+     //cuando el usuario se haya registrado mal o duplicado
+     useEffect(()=>{
+        if(authenticated){
+            props.history.push('/projects');
+        }
+        if(msg){
+            viewAlert(msg.msg, msg.category);
+            return;
+        }
+    }, [msg, authenticated, props.history]);
 
     const onSubmit=e=>{
         e.preventDefault();
