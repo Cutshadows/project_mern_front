@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import AlertContext from '../../context/alerts/alertContext';
 import AuthContext from '../../context/authentication/authContext';
 
-const Login = () => {
+const Login = (props) => {
 
      //extraer los valores del context
      const alertContext=useContext(AlertContext);
@@ -21,7 +21,7 @@ const Login = () => {
 
 
     const {email, password}=user;
-    const onChangeIniciarSesion=()=>{
+    const onChangeIniciarSesion=(e)=>{
         saveUser({
             ...user,
             [e.target.name]: e.target.value
@@ -44,9 +44,20 @@ const Login = () => {
         e.preventDefault();
 
         //Validar campos de el formulario
+        if(email.trim==='' || password.trim===''){
+            viewAlert('todos los campos son obligatorios', 'alerta-error');
+            return;
+        }
+        //pasar al action
+        initSession({email, password});
     }
     return ( 
         <div className="form-usuario">
+            {
+                alert?(
+                    <div className={`alerta ${alert.category}`}>{alert.msg}</div>
+                ):null
+        }
             <div className="contenedor-form sombra-dark">
                 <h1>Iniciar Sesión</h1>
                 <form 

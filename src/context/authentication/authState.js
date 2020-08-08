@@ -71,8 +71,15 @@ const AuthState=props=>{
         try {
              const responseLogin=await clientAxios.post('/api/auth', datos);
              console.log(responseLogin);
+             dispatch({
+                 type:SUCCESFULL_LOGIN,
+                 payload:responseLogin.data
+             });
+             //obtener el usuario
+             userAuthenticated();
         } catch (error) {
             console.log(error.response);
+            
             const alerta={
                 msg:error.response.data.msg,
                 category:'alerta-error'
