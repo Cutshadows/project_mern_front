@@ -38,6 +38,7 @@ const Login = (props) => {
             viewAlert(msg.msg, msg.category);
             return;
         }
+        //eslint-disable-next-line
     }, [msg, authenticated, props.history]);
 
     const onSubmit=e=>{

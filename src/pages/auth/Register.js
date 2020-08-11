@@ -22,6 +22,7 @@ const Register = (props) => {
             viewAlert(msg.msg, msg.category);
             return;
         }
+        //eslint-disable-next-line
     }, [msg, authenticated, props.history]);
 
     const [user, saveUser]=useState({

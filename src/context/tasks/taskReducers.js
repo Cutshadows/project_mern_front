@@ -3,7 +3,7 @@ import {
     ADD_TASK,
     VALIDATE_TASK,
     DELETE_TASK,
-    TASK_STATE,
+    CURRENT_TASK,
     UPDATE_TASK,
     TASK_UDP,
     CLEAN_TASK
@@ -15,12 +15,12 @@ export default (state, action)=>{
         case TASKS_PROJECT:
             return{
                 ...state,
-                projecttask:state.tasks.filter(task=>task.projectId===action.payload)
+                projecttask:action.payload
             }
         case ADD_TASK:
             return{
                 ...state,
-                tasks:[ action.payload, ...state.tasks],
+                projecttask:[ action.payload, ...state.projecttask],
                 taskerror:false
             }
         case VALIDATE_TASK:
@@ -31,24 +31,24 @@ export default (state, action)=>{
         case DELETE_TASK:
             return{
                 ...state,
-                tasks:state.tasks.filter(task=>task.id!==action.payload)
-            }
-        case TASK_STATE:
-            return{
-                ...state,
-                tasks:state.tasks.map(task=>task.id===action.payload.id ? 
-                    action.payload:task)
+                projecttask:state.projecttask.filter(task=>task._id!==action.payload)
             }
         case UPDATE_TASK:
             return{
                 ...state,
-                selectedtask:action.payload
+                projecttask:state.projecttask.map(task=>task._id===action.payload._id ? 
+                    action.payload:task)
             }
         case TASK_UDP:
             return{
                 ...state,
-                tasks:state.tasks.map(task=>task.id===action.payload.id?
+                projecttask:state.projecttask.map(task=>task._id===action.payload._id?
                     action.payload:task)
+            }
+        case CURRENT_TASK:
+            return{
+                ...state,
+                selectedtask:action.payload
             }
         case CLEAN_TASK:
             return{

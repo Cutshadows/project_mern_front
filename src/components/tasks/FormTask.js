@@ -8,6 +8,7 @@ const FormTask = () => {
     const projectContext=useContext(ProjectContext);
     const {project}=projectContext;
     
+    
     const taskContext=useContext(TaskContext);
     const {
         selectedtask, 
@@ -15,7 +16,8 @@ const FormTask = () => {
         addTask, 
         viewErrorTask, 
         getTasks,
-        taskUdp,
+        updateTask,
+        //taskUdp,
         cleanTask
     }=taskContext;
     
@@ -28,9 +30,12 @@ const FormTask = () => {
             })
         }
     }, [selectedtask])
+   
     const [task, saveTask]=useState({
         taskName:''
     });
+
+    const {taskName}=task;
     //si no hay proyecto seleccionado
     if(!project)return null;
 
@@ -44,8 +49,6 @@ const FormTask = () => {
             [e.target.name]:e.target.value
         })
     }
-    const {taskName}=task;
-    
     
 
     const onSubmit=e=>{
@@ -58,19 +61,18 @@ const FormTask = () => {
         //pasar la validacion
         if(selectedtask===null){
             //add new task
-            task.projectId=currentProject.id;
-            task.estado=false;
+            task.project=currentProject._id;
             addTask(task);
         }else{
             //actualizar tarea existente
-            taskUdp(task);
+            updateTask(task);
 
             //limpia tarea
             cleanTask();
         }
 
         //Obtener y filtrar
-        getTasks(currentProject.id);
+        getTasks(currentProject._id);
 
         //reiniciar
         saveTask({

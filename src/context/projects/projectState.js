@@ -1,7 +1,9 @@
 import React, {useReducer} from 'react';
 import projectContext from './projectContext';
 import projectReducer from './projectReducer';
-import { v4 as uuidv4 } from 'uuid';
+//import { v4 as uuidv4 } from 'uuid';
+import clientAxios from '../../config/axios';
+import tokenAuth from '../../config/tokenAuth';
 
 import { 
     FORMULARIO_PROYECTO,
@@ -9,22 +11,18 @@ import {
     ADD_PROJECT,
     VALIDATE_FORM,
     CURRENT_PROJECT,
-    DELETE_PROJECT 
+    DELETE_PROJECT,
+    ERROR_PROJECT 
 } from '../../types';
 
 
 const  ProjectState=props=> {
-    const projects=[
-        {id:1, projectName:'tienda Virtual'},
-        {id:2, projectName:"Intranet"},
-        {id:3, projectName:'Diseño web'},
-        {id:4, projectName:'Diseño de BD'}
-    ];
     const initialState={
         projects:[],
         formulario: false,
         errorformulario:false,
-        project:null
+        project:null,
+        msg:null
     }
 
     //Dispatch para ejecutar las acciones
@@ -38,22 +36,51 @@ const  ProjectState=props=> {
         })
     }
         //obtener los proyectos
-    const getProjects=()=>{
-        dispatch({
-            type:GET_PROJECTS,
-            payload:projects //le mando el payload como action para verificar en el reducer
-        })
+    const getProjects=async ()=>{
+        /* const token=localStorage.getItem('token');
+        if(token){
+            tokenAuth(token);
+        } */
+        try {
+            //insertar el proyecto en el state
+            
+            const resultProject=await clientAxios.get('/api/projects');
+            dispatch({
+                type:GET_PROJECTS,
+                payload:resultProject.data.projects //le mando el payload como action para verificar en el reducer
+            });
+        } catch (error) {
+            const alert={
+                msg:'Hubo un error',
+                category: 'alerta-error '
+            }
+            dispatch({
+                type:ERROR_PROJECT,
+                payload:alert
+            });
+        }
+        
     }
 
     //nuevo proyecto
-    const addProject=project=>{
-        project.id=uuidv4();
-
-        //insertar el proyecto en el state
-        dispatch({
-            type:ADD_PROJECT,
-            payload:project
-        })
+    const addProject= async project=>{
+       try {
+                //insertar el proyecto en el state
+            const resultProject=await clientAxios.post('/api/projects', project);
+            dispatch({
+                type:ADD_PROJECT,
+                payload:resultProject.data
+            });
+       } catch (error) {
+            const alert={
+                msg:'Hubo un error',
+                category: 'alerta-error '
+            }
+            dispatch({
+                type:ERROR_PROJECT,
+                payload:alert
+            });
+       }
 
     }
 
@@ -71,11 +98,26 @@ const  ProjectState=props=> {
         })
     }
 
-    const deleteProject=projectId=>{
-        dispatch({
-            type: DELETE_PROJECT,
-            payload:projectId
-        })
+    const deleteProject=async projectId=>{
+        try {
+            //insertar el proyecto en el state
+            //const resultProject=await clientAxios.delete(`/api/projects/${projectId}`);
+            const resultProject=await clientAxios.delete(`/api/projects/${projectId}`);
+            dispatch({
+                type: DELETE_PROJECT,
+                payload:projectId
+            })
+        } catch (error) {
+            const alert={
+                msg:'Hubo un error',
+                category: 'alerta-error '
+            }
+            dispatch({
+                type:ERROR_PROJECT,
+                payload:alert
+            });
+        }
+        
     }
     return(
         <projectContext.Provider
@@ -84,6 +126,7 @@ const  ProjectState=props=> {
                 formulario:state.formulario,  //state con minuscula
                 errorformulario:state.errorformulario,
                 project:state.project,
+                msg:state.msg,
                 mostrarFormulario,       //funcion mantenerlas con cammelcase,
                 getProjects,
                 addProject,

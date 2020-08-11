@@ -1,34 +1,24 @@
 import React,{useReducer, Children} from 'react';
 import taskReducer from './taskReducers';
 import TaskContext from './taskContext';
-import { v4 as uuidv4 } from 'uuid';
+//import { v4 as uuidv4 } from 'uuid';
 
 import {
 TASKS_PROJECT,
 ADD_TASK,
 VALIDATE_TASK,
 DELETE_TASK,
-TASK_STATE,
+CURRENT_TASK,
 UPDATE_TASK,
 TASK_UDP,
 CLEAN_TASK
 } from '../../types';
+import clientAxios from '../../config/axios';
 
 
 const TaskState =props=>{
     const initialState={
-        tasks:[
-            {id:1, taskName:'Elegir Plataforma', estado:true, projectId:1 },
-            {id:2, taskName:'Elegir Colores', estado:false, projectId:2 },
-            {id:3, taskName:'Elegir plataforma de pago', estado:false, projectId:3 },
-            {id:4, taskName:'Elegir hosting', estado:true, projectId:4 },
-            {id:5, taskName:'Elegir Plataforma', estado:true, projectId:2 },
-            {id:6, taskName:'Elegir Colores', estado:true, projectId:3 },
-            {id:7, taskName:'Elegir hosting', estado:false, projectId:3 },
-            {id:8, taskName:'Elegir Plataforma de pago', estado:true, projectId:2 },
-            {id:9, taskName:'Elegir Distribuidor', estado:true, projectId:1 },
-        ],
-        projecttask:null,
+        projecttask:[],
         taskerror:false,
         selectedtask:null
     }
@@ -36,55 +26,85 @@ const TaskState =props=>{
     //Dispatch para ejecutar las acciones
     const [state, dispatch] = useReducer(taskReducer, initialState);
 
-
     //obtener las tareas de un proyecto
-    const getTasks=projectId=>{
-        dispatch({
-            type:TASKS_PROJECT,
-            payload:projectId
-        })
+    const getTasks=async project=>{
+        try {
+            const resultTask=await clientAxios.get(`/api/tasks`, {params:{ project }});
+            dispatch({
+                type:TASKS_PROJECT,
+                payload:resultTask.data.tasks
+            })
+        } catch (error) {
+        }
+       
     }
 
     //Agregar una tarea al proyecto seleccionado
-    const addTask=task=>{
-        task.id=uuidv4();
-        dispatch({
-            type:ADD_TASK,
-            payload:task
-        })
+    const addTask=async task=>{
+        //task.id=uuidv4();
+        try {
+            const resultTask=await clientAxios.post('/api/tasks', task);
+            dispatch({
+                type:ADD_TASK,
+                payload:task
+            }) 
+        } catch (error) {
+        }
     }
+   //DELETE TASK
+    const deleteTask=async (taskId, project)=>{
+        try {
+            const resultTask=await clientAxios.delete(`/api/tasks/${taskId}`, {params:{project}});
+            dispatch({
+                type: DELETE_TASK,
+                payload:taskId
+            })
+        } catch (error) {
+        }
+        
+    }
+
+
     const viewErrorTask=()=>{
         dispatch({
             type:VALIDATE_TASK
         })
     }
-    const deleteTask=taskId=>{
-        dispatch({
-            type: DELETE_TASK,
-            payload:taskId
-        })
-    }
-
     //CAMBIA EL ESTADO DE CADA TAREA
-    const changeStateTask=task=>{
+    /* const changeStateTask=task=>{
         dispatch({
             type:TASK_STATE,
             payload:task
         })
-    }
+    } */
     //actualizar tarea
-    const updateTask=task=>{
+    const updateTask=async task=>{
+        try {
+            const resultUpdateTask=await clientAxios.put(`/api/tasks/${task._id}`, task);
+            dispatch({
+                type:UPDATE_TASK,
+                payload:resultUpdateTask.data.task
+            })
+        } catch (error) {
+        }
+        
+    }
+
+
+    const saveCurrentTask= task=>{
         dispatch({
-            type:UPDATE_TASK,
+            type:CURRENT_TASK,
             payload:task
         })
     }
+
     const taskUdp=task=>{
         dispatch({
             type:TASK_UDP,
             payload:task
         })
     }
+
     const cleanTask=()=>{
         dispatch({
             type:CLEAN_TASK
@@ -93,7 +113,7 @@ const TaskState =props=>{
     return(
         <TaskContext.Provider
         value={{
-            tasks:state.tasks,
+            //tasks:state.tasks,
             projecttask:state.projecttask,
             taskerror:state.taskerror,
             selectedtask:state.selectedtask,
@@ -101,7 +121,8 @@ const TaskState =props=>{
             addTask,
             viewErrorTask,
             deleteTask,
-            changeStateTask,
+            saveCurrentTask,
+            //changeStateTask,
             updateTask,
             taskUdp,
             cleanTask

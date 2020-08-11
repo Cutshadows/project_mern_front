@@ -16,25 +16,27 @@ export default (state, action)=>{
             return {
                 ...state,
                 authenticated:true,
-                msg:null
+                msg:null,
+                loading:false
             }
+        case LOGOUT:
         case ERROR_LOGIN:
         case ERROR_REGISTER:
             return {
                 ...state,
                 token:null,
-                msg:action.payload
+                user:null,
+                authenticated:null,
+                msg:action.payload,
+                lading:true
             }
         case GET_USER:
             return {
                 ...state,
-                user:action.payload
+                authenticated:true,
+                user:action.payload,
+                loading:false
             }
-        case LOGOUT:
-            return {
-                alert:action.payload
-            }
-    
         default:
             return state;
     }

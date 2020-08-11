@@ -1,4 +1,4 @@
-import React, {useContext, Fragment} from 'react';
+import React, { Fragment, useContext } from 'react';
 import Task from './Task';
 import ProjectContext from 'context/projects/projectContext';
 import TaskContext from 'context/tasks/taskContext';
@@ -8,18 +8,17 @@ import {CSSTransition, TransitionGroup} from 'react-transition-group';
 const TasksList = () => {
     const projectContext=useContext(ProjectContext);
     const {project, deleteProject}=projectContext;
-    
-    console.log(deleteProject.toString());
-    if(!project)return <h2>Selecciona un proyecto</h2>;
-    const [currentProject]=project;
-
     const taskContext=useContext(TaskContext);
     const {projecttask}=taskContext;
 
+    if(!project)return <h2>Selecciona un proyecto</h2>;
+    const [currentProject]=project;
+
+    
     // const tasks=[];
     //array destructuring para extraer el proyecto
     const onClickEliminar=()=>{
-        deleteProject(currentProject.id);
+        deleteProject(currentProject._id);
     }
     return ( 
         <Fragment>
@@ -31,7 +30,7 @@ const TasksList = () => {
                     <TransitionGroup>
                         { projecttask.map(task=>(
                             <CSSTransition
-                            key={task.id}
+                            key={task._id}
                             timeout={200}
                             classNames="tarea"
                             >

@@ -12,9 +12,12 @@ import ProjectState from '../context/projects/projectState';
 import TaskState from '../context/tasks/taskState';
 import AlertState from '../context/alerts/alertState';
 import AuthState from '../context/authentication/authState';
-
-
-
+import tokenAuth from '../config/tokenAuth';
+import PrivateRoute from '../components/rutes/PrivateRutes';
+const token=localStorage.getItem('token');
+if(token){
+    tokenAuth(token);
+}
 
 const App  = () => {
     return (
@@ -26,7 +29,7 @@ const App  = () => {
                                 <Switch>
                                     <Route exact path="/" component={Login}/>
                                     <Route exact path="/register" component={Register}/>
-                                    <Route exact path="/projects" component={Project}/>
+                                    <PrivateRoute exact path="/projects" component={Project}/>
                                 </Switch>
                             </Router>
                         </AuthState>

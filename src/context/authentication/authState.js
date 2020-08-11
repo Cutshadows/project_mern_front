@@ -17,14 +17,14 @@ const AuthState=props=>{
         token: localStorage.getItem('token'),
         authenticated:null,
         user:null,
-        msg:null
+        msg:null,
+        loading:false
     }
     const [state, dispatch]=useReducer(authReducer, initialState);
     
     const registerUser=async(datos)=>{
         try {
             const response= await clientAxios.post('/api/users', datos);
-            //console.log(response);
             dispatch({
                 type:SUCCESFULL_REGISTER,
                 payload:response.data
@@ -32,7 +32,6 @@ const AuthState=props=>{
             //get user authenticated
             userAuthenticated();
         } catch (error) {
-            console.log(error.response);
             const alerta={
                 msg:error.response.data.msg,
                 category:'alerta-error'
@@ -53,24 +52,28 @@ const AuthState=props=>{
         }
         try {
             const response=await clientAxios.get('/api/auth');
-            console.log(response);
             dispatch({
                 type: GET_USER,
                 payload:response.data.users
             });
         } catch (error) {
-            console.log(error);
             dispatch({
                 type:ERROR_LOGIN
             })
         }
     }
 
+    //Cerrar la sesion de usuario
+    const logoutSession=()=>{
+        dispatch({
+            type:LOGOUT
+        })
+    }
+
     //cuando el usuario inicia sesion
     const initSession=async datos=>{
         try {
              const responseLogin=await clientAxios.post('/api/auth', datos);
-             console.log(responseLogin);
              dispatch({
                  type:SUCCESFULL_LOGIN,
                  payload:responseLogin.data
@@ -78,7 +81,6 @@ const AuthState=props=>{
              //obtener el usuario
              userAuthenticated();
         } catch (error) {
-            console.log(error.response);
             
             const alerta={
                 msg:error.response.data.msg,
@@ -98,8 +100,11 @@ const AuthState=props=>{
             authenticated:state.authenticated,
             user:state.user,
             msg:state.msg,
+            loading:state.loading,
             registerUser,
-            initSession
+            initSession,
+            userAuthenticated,
+            logoutSession
 
         }}>
         {props.children}

@@ -7,42 +7,41 @@ const Task = ({task}) => {
     const {project}=projectContext;
 
     const taskContext=useContext(TaskContext);
-    const {deleteTask, getTasks, changeStateTask, updateTask} =taskContext;
+    const {deleteTask, getTasks, updateTask, saveCurrentTask } =taskContext; //changeStateTask
     
     
 
-    const {taskName, estado}=task;
+    const {taskName, status}=task;
 
     const [currentProject]=project;
     //funcion que se ejecuta cuando el usuario presion el btn de eliminar tarea
     const taskDelete=id=>{
-        deleteTask(id);
+        deleteTask(id, currentProject._id);
         //getTasks(project[0].id); //otra forma de borrar una tarea
-        getTasks(currentProject.id);
+        getTasks(currentProject._id);
     }
 
     //function que modifica el estado de la tarea
 
     const changeState=task=>{
-        if(task.estado){
-            task.estado=false;
+        if(task.status){
+            task.status=false;
         }else{
-            task.estado=true;
+            task.status=true;
         }
-        changeStateTask(task);
+        updateTask(task);
     }
-    //console.log(changeState.toString());
-    //console.log(changeStateTask.toString());
     //crear funcion que seleccione la tarea
 
     const selectTask=task=>{
-        updateTask(task);
+        //updateTask(task);
+        saveCurrentTask(task);
     }
     return ( 
         <li className="tarea sombra">
             <p>{taskName} </p>
             <div className="estado">
-                {task.estado?
+                {task.status?
                     (
                         <button
                             type="button"
@@ -71,7 +70,7 @@ const Task = ({task}) => {
                 <button 
                 className="btn btn-secundario"
                 type="button"
-                onClick={()=>taskDelete(task.id)}
+                onClick={()=>taskDelete(task._id)}
                 >
                     Eliminar
                 </button>
